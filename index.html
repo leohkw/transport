@@ -85,11 +85,52 @@
             height: auto;
             border-radius: 4px;
         }
+
+        /* 添加 GPS 位置顯示區域的樣式 */
+        .gps-container {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .gps-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1em;
+        }
+        .gps-button {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .gps-button:hover {
+            background: #0052a3;
+        }
+        .gps-error {
+            color: #ff4444;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>澳門即時交通影像</h1>
+
+        <!-- 添加 GPS 位置顯示區域 -->
+        <div class="gps-container">
+            <h3>您的當前位置</h3>
+            <div class="gps-info">
+                <span>📍</span>
+                <span id="location-display">等待獲取位置...</span>
+            </div>
+            <button class="gps-button" onclick="getLocation()">更新位置</button>
+        </div>
 
         <!-- 添加截圖區域 -->
         <div class="snapshot-grid">
@@ -249,6 +290,68 @@
                 });
             });
         }, { once: true });
+
+        // 添加 GPS 相關函數
+        function getLocation() {
+            const locationDisplay = document.getElementById('location-display');
+            
+            // 檢查瀏覽器是否支持地理位置
+            if (!navigator.geolocation) {
+                locationDisplay.innerHTML = '您的瀏覽器不支持地理位置功能';
+                return;
+            }
+
+            // 更新顯示文字
+            locationDisplay.innerHTML = '正在獲取位置...';
+
+            // 獲取位置
+            navigator.geolocation.getCurrentPosition(
+                // 成功回調
+                function(position) {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+                    const accuracy = Math.round(position.coords.accuracy);
+
+                    // 格式化位置信息
+                    locationDisplay.innerHTML = `
+                        緯度: ${latitude.toFixed(6)}<br>
+                        經度: ${longitude.toFixed(6)}<br>
+                        精確度: ${accuracy} 米
+                    `;
+
+                    // 可以添加到地圖服務的連結
+                    locationDisplay.innerHTML += `<br><a href="https://www.google.com/maps?q=${latitude},${longitude}" target="_blank" style="color: #0066cc;">在 Google 地圖中查看</a>`;
+                },
+                // 錯誤回調
+                function(error) {
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            locationDisplay.innerHTML = '用戶拒絕了位置請求';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            locationDisplay.innerHTML = '位置信息不可用';
+                            break;
+                        case error.TIMEOUT:
+                            locationDisplay.innerHTML = '請求位置超時';
+                            break;
+                        case error.UNKNOWN_ERROR:
+                            locationDisplay.innerHTML = '發生未知錯誤';
+                            break;
+                    }
+                },
+                // 選項
+                {
+                    enableHighAccuracy: true, // 高精度
+                    timeout: 5000,           // 超時時間：5秒
+                    maximumAge: 0            // 不使用緩存
+                }
+            );
+        }
+
+        // 頁面加載時自動獲取一次位置
+        document.addEventListener('DOMContentLoaded', function() {
+            getLocation();
+        });
     </script>
 </body>
 </html>
