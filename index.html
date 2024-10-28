@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>澳門即時交通影像</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .video-container {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            padding: 15px;
+        }
+        .video-title {
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            color: #333;
+        }
+        video {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+        .links-container {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        .links-container ul {
+            list-style: none;
+            padding: 0;
+        }
+        .links-container li {
+            margin-bottom: 10px;
+        }
+        .links-container a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+        .links-container a:hover {
+            text-decoration: underline;
+        }
+
+        /* 添加截圖區域的樣式 */
+        .snapshot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .snapshot-container {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            padding: 15px;
+        }
+        .snapshot-title {
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            color: #333;
+        }
+        .snapshot-image {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>澳門即時交通影像</h1>
+
+        <!-- 添加截圖區域 -->
+        <div class="snapshot-grid">
+            <div class="snapshot-container">
+                <div class="snapshot-title">友誼大橋近港澳碼頭出口交匯處</div>
+                <img id="snapshot1" 
+                     class="snapshot-image"
+                     src="https://streaming1.dsatmacau.com/snapshot/b1041.jpg" 
+                     alt="友誼大橋近港澳碼頭出口交匯處截圖"
+                     onerror="this.onerror=null; retryLoadImage(this, 'b1041');">
+            </div>
+            <div class="snapshot-container">
+                <div class="snapshot-title">友誼大橋近氹仔端出口</div>
+                <img id="snapshot2" 
+                     class="snapshot-image"
+                     src="https://streaming1.dsatmacau.com/snapshot/b1015.jpg" 
+                     alt="友誼大橋近氹仔端出口截圖"
+                     onerror="this.onerror=null; retryLoadImage(this, 'b1015');">
+            </div>
+        </div>
+
+        <div class="video-grid">
+            <div class="video-container">
+                <div class="video-title">友誼大橋近港澳碼頭出口交匯處</div>
+                <video id="video1" controls muted playsinline></video>
+            </div>
+            <div class="video-container">
+                <div class="video-title">友誼大橋近氹仔端出口</div>
+                <video id="video2" controls muted playsinline></video>
+            </div>
+        </div>
+
+        <div class="links-container">
+            <h3>直接連結：</h3>
+            <ul>
+                <li>
+                    <a href="https://www.dsat.gov.mo/realtime_core4.aspx?cam_id=51&lang=tc" target="_blank">
+                        🎥 友誼大橋近港澳碼頭出口交匯處
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.dsat.gov.mo/realtime_core4.aspx?lang=tc&cam_id=109" target="_blank">
+                        🎥 友誼大橋近氹仔端出口
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // 重試加載圖片的函數
+        function retryLoadImage(img, camId) {
+            const urls = [
+                `https://streaming1.dsatmacau.com/snapshot/${camId}.jpg`,
+                `https://streaming1.dsatmacau.com/traffic/${camId}.jpg`,
+                `https://streaming1.dsatmacau.com/images/${camId}.jpg`
+            ];
+            
+            let currentUrlIndex = 0;
+            
+            function tryNextUrl() {
+                if (currentUrlIndex < urls.length) {
+                    img.src = `${urls[currentUrlIndex]}?t=${new Date().getTime()}`;
+                    currentUrlIndex++;
+                }
+            }
+            
+            img.onerror = tryNextUrl;
+            tryNextUrl();
+        }
+
+        // 更新截圖
+        function updateSnapshots() {
+            const timestamp = new Date().getTime();
+            const snapshot1 = document.getElementById('snapshot1');
+            const snapshot2 = document.getElementById('snapshot2');
+
+            // 嘗試使用新的 URL 格式
+            snapshot1.src = `https://streaming1.dsatmacau.com/snapshot/b1041.jpg?t=${timestamp}`;
+            snapshot2.src = `https://streaming1.dsatmacau.com/snapshot/b1015.jpg?t=${timestamp}`;
+
+            // 添加錯誤處理
+            snapshot1.onerror = function() {
+                retryLoadImage(this, 'b1041');
+            };
+            snapshot2.onerror = function() {
+                retryLoadImage(this, 'b1015');
+            };
+        }
+
+        // 定期更新截圖，時間間隔調整為 10 秒
+        setInterval(updateSnapshots, 10000);
+
+        // 頁面加載時立即更新一次截圖
+        document.addEventListener('DOMContentLoaded', updateSnapshots);
+
+        const videoSources = [
+            "https://streaming1.dsatmacau.com/traffic/b1041.m3u8",
+            "https://streaming1.dsatmacau.com/traffic/b1015.m3u8"
+        ];
+
+        // 初始化 HLS 播放器
+        videoSources.forEach((source, index) => {
+            const video = document.getElementById(`video${index + 1}`);
+            if (Hls.isSupported()) {
+                const hls = new Hls({
+                    enableWorker: true,
+                    lowLatencyMode: true,
+                    debug: false,
+                    // 添加重試機制
+                    manifestLoadingRetryDelay: 1000,
+                    manifestLoadingMaxRetry: 5,
+                    levelLoadingRetryDelay: 1000,
+                    levelLoadingMaxRetry: 5
+                });
+                hls.loadSource(source);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                    video.play().catch(error => {
+                        console.log("自動播放失敗，等待用戶互動:", error);
+                    });
+                });
+                
+                // 添加錯誤處理
+                hls.on(Hls.Events.ERROR, function (event, data) {
+                    if (data.fatal) {
+                        switch (data.type) {
+                            case Hls.ErrorTypes.NETWORK_ERROR:
+                                console.log("網絡錯誤，嘗試恢復...");
+                                hls.startLoad();
+                                break;
+                            case Hls.ErrorTypes.MEDIA_ERROR:
+                                console.log("媒體錯誤，嘗試恢復...");
+                                hls.recoverMediaError();
+                                break;
+                            default:
+                                console.log("無法恢復的錯誤");
+                                hls.destroy();
+                                break;
+                        }
+                    }
+                });
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = source;
+                video.play().catch(error => {
+                    console.log("自動播放失敗，等待用戶互動:", error);
+                });
+            }
+        });
+
+        // 在用戶點擊頁面後嘗試播放
+        document.addEventListener('click', () => {
+            videoSources.forEach((_, index) => {
+                const video = document.getElementById(`video${index + 1}`);
+                video.play().catch(error => {
+                    console.log("播放失敗:", error);
+                });
+            });
+        }, { once: true });
+    </script>
+</body>
+</html>
