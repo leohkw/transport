@@ -60,33 +60,6 @@
         .links-container a:hover {
             text-decoration: underline;
         }
-
-        /* 添加截圖區域的樣式 */
-        .snapshot-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        .snapshot-container {
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            overflow: hidden;
-            padding: 15px;
-        }
-        .snapshot-title {
-            margin-bottom: 10px;
-            font-size: 1.2em;
-            color: #333;
-        }
-        .snapshot-image {
-            width: 100%;
-            height: auto;
-            border-radius: 4px;
-        }
-
-        /* 添加 GPS 位置顯示區域的樣式 */
         .gps-container {
             background: #fff;
             border: 1px solid #ddd;
@@ -122,7 +95,7 @@
     <div class="container">
         <h1>澳門即時交通影像</h1>
 
-        <!-- 添加 GPS 位置顯示區域 -->
+        <!-- GPS 位置顯示區域 -->
         <div class="gps-container">
             <h3>您的當前位置</h3>
             <div class="gps-info">
@@ -132,26 +105,7 @@
             <button class="gps-button" onclick="getLocation()">更新位置</button>
         </div>
 
-        <!-- 添加截圖區域 -->
-        <div class="snapshot-grid">
-            <div class="snapshot-container">
-                <div class="snapshot-title">友誼大橋近港澳碼頭出口交匯處</div>
-                <img id="snapshot1" 
-                     class="snapshot-image"
-                     src="https://streaming1.dsatmacau.com/snapshot/b1041.jpg" 
-                     alt="友誼大橋近港澳碼頭出口交匯處截圖"
-                     onerror="this.onerror=null; retryLoadImage(this, 'b1041');">
-            </div>
-            <div class="snapshot-container">
-                <div class="snapshot-title">友誼大橋近氹仔端出口</div>
-                <img id="snapshot2" 
-                     class="snapshot-image"
-                     src="https://streaming1.dsatmacau.com/snapshot/b1015.jpg" 
-                     alt="友誼大橋近氹仔端出口截圖"
-                     onerror="this.onerror=null; retryLoadImage(this, 'b1015');">
-            </div>
-        </div>
-
+        <!-- 視頻區域 -->
         <div class="video-grid">
             <div class="video-container">
                 <div class="video-title">友誼大橋近港澳碼頭出口交匯處</div>
@@ -161,8 +115,17 @@
                 <div class="video-title">友誼大橋近氹仔端出口</div>
                 <video id="video2" controls muted playsinline></video>
             </div>
+            <div class="video-container">
+                <div class="video-title">路氹城 - 望德聖母灣大馬路</div>
+                <video id="video3" controls muted playsinline></video>
+            </div>
+            <div class="video-container">
+                <div class="video-title">路氹城 - 蓮花海濱大馬路</div>
+                <video id="video4" controls muted playsinline></video>
+            </div>
         </div>
 
+        <!-- 連結區域 -->
         <div class="links-container">
             <h3>直接連結：</h3>
             <ul>
@@ -176,60 +139,26 @@
                         🎥 友誼大橋近氹仔端出口
                     </a>
                 </li>
+                <li>
+                    <a href="https://www.dsat.gov.mo/realtime_core4.aspx?lang=tc&cam_id=1311" target="_blank">
+                        🎥 路氹城 - 望德聖母灣大馬路
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.dsat.gov.mo/realtime_core4.aspx?lang=tc&cam_id=1312" target="_blank">
+                        🎥 路氹城 - 蓮花海濱大馬路
+                    </a>
+                </li>
             </ul>
         </div>
     </div>
 
     <script>
-        // 重試加載圖片的函數
-        function retryLoadImage(img, camId) {
-            const urls = [
-                `https://streaming1.dsatmacau.com/snapshot/${camId}.jpg`,
-                `https://streaming1.dsatmacau.com/traffic/${camId}.jpg`,
-                `https://streaming1.dsatmacau.com/images/${camId}.jpg`
-            ];
-            
-            let currentUrlIndex = 0;
-            
-            function tryNextUrl() {
-                if (currentUrlIndex < urls.length) {
-                    img.src = `${urls[currentUrlIndex]}?t=${new Date().getTime()}`;
-                    currentUrlIndex++;
-                }
-            }
-            
-            img.onerror = tryNextUrl;
-            tryNextUrl();
-        }
-
-        // 更新截圖
-        function updateSnapshots() {
-            const timestamp = new Date().getTime();
-            const snapshot1 = document.getElementById('snapshot1');
-            const snapshot2 = document.getElementById('snapshot2');
-
-            // 嘗試使用新的 URL 格式
-            snapshot1.src = `https://streaming1.dsatmacau.com/snapshot/b1041.jpg?t=${timestamp}`;
-            snapshot2.src = `https://streaming1.dsatmacau.com/snapshot/b1015.jpg?t=${timestamp}`;
-
-            // 添加錯誤處理
-            snapshot1.onerror = function() {
-                retryLoadImage(this, 'b1041');
-            };
-            snapshot2.onerror = function() {
-                retryLoadImage(this, 'b1015');
-            };
-        }
-
-        // 定期更新截圖，時間間隔調整為 10 秒
-        setInterval(updateSnapshots, 10000);
-
-        // 頁面加載時立即更新一次截圖
-        document.addEventListener('DOMContentLoaded', updateSnapshots);
-
         const videoSources = [
             "https://streaming1.dsatmacau.com/traffic/b1041.m3u8",
-            "https://streaming1.dsatmacau.com/traffic/b1015.m3u8"
+            "https://streaming1.dsatmacau.com/traffic/b1025.m3u8",
+            "https://streaming1.dsatmacau.com/traffic/b1311.m3u8",
+            "https://streaming1.dsatmacau.com/traffic/b1312.m3u8"
         ];
 
         // 初始化 HLS 播放器
@@ -240,7 +169,6 @@
                     enableWorker: true,
                     lowLatencyMode: true,
                     debug: false,
-                    // 添加重試機制
                     manifestLoadingRetryDelay: 1000,
                     manifestLoadingMaxRetry: 5,
                     levelLoadingRetryDelay: 1000,
@@ -254,7 +182,6 @@
                     });
                 });
                 
-                // 添加錯誤處理
                 hls.on(Hls.Events.ERROR, function (event, data) {
                     if (data.fatal) {
                         switch (data.type) {
@@ -281,48 +208,31 @@
             }
         });
 
-        // 在用戶點擊頁面後嘗試播放
-        document.addEventListener('click', () => {
-            videoSources.forEach((_, index) => {
-                const video = document.getElementById(`video${index + 1}`);
-                video.play().catch(error => {
-                    console.log("播放失敗:", error);
-                });
-            });
-        }, { once: true });
-
-        // 添加 GPS 相關函數
+        // GPS 相關函數
         function getLocation() {
             const locationDisplay = document.getElementById('location-display');
             
-            // 檢查瀏覽器是否支持地理位置
             if (!navigator.geolocation) {
                 locationDisplay.innerHTML = '您的瀏覽器不支持地理位置功能';
                 return;
             }
 
-            // 更新顯示文字
             locationDisplay.innerHTML = '正在獲取位置...';
 
-            // 獲取位置
             navigator.geolocation.getCurrentPosition(
-                // 成功回調
                 function(position) {
                     const latitude = position.coords.latitude;
                     const longitude = position.coords.longitude;
                     const accuracy = Math.round(position.coords.accuracy);
 
-                    // 格式化位置信息
                     locationDisplay.innerHTML = `
                         緯度: ${latitude.toFixed(6)}<br>
                         經度: ${longitude.toFixed(6)}<br>
                         精確度: ${accuracy} 米
                     `;
 
-                    // 可以添加到地圖服務的連結
                     locationDisplay.innerHTML += `<br><a href="https://www.google.com/maps?q=${latitude},${longitude}" target="_blank" style="color: #0066cc;">在 Google 地圖中查看</a>`;
                 },
-                // 錯誤回調
                 function(error) {
                     switch(error.code) {
                         case error.PERMISSION_DENIED:
@@ -339,16 +249,15 @@
                             break;
                     }
                 },
-                // 選項
                 {
-                    enableHighAccuracy: true, // 高精度
-                    timeout: 5000,           // 超時時間：5秒
-                    maximumAge: 0            // 不使用緩存
+                    enableHighAccuracy: true,
+                    timeout: 5000,
+                    maximumAge: 0
                 }
             );
         }
 
-        // 頁面加載時自動獲取一次位置
+        // 頁面加載時自動獲取位置
         document.addEventListener('DOMContentLoaded', function() {
             getLocation();
         });
